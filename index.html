@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator - Purple Edition</title>
+    <meta name="description" content="Generate beautiful QR codes instantly with our purple-themed QR code generator">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="background-animation"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
+                    <rect x="14" y="14" width="3" height="3" fill="currentColor" />
+                    <rect x="18" y="14" width="3" height="3" fill="currentColor" />
+                    <rect x="14" y="18" width="3" height="3" fill="currentColor" />
+                    <rect x="18" y="18" width="3" height="3" fill="currentColor" />
+                </svg>
+                <h1>QR Code Generator</h1>
+            </div>
+            <p class="subtitle">Create stunning QR codes instantly</p>
+        </header>
+
+        <div class="card">
+            <div class="input-section">
+                <label for="urlInput" class="input-label">Enter URL or Text</label>
+                <div class="input-wrapper">
+                    <input type="text" id="urlInput" class="url-input" placeholder="https://example.com or any text..."
+                        autocomplete="off" />
+                    <button id="clearBtn" class="clear-btn" title="Clear input">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="options-grid">
+                    <div class="option-group">
+                        <label for="sizeSelect" class="option-label">Size</label>
+                        <select id="sizeSelect" class="option-select">
+                            <option value="200">Small (200x200)</option>
+                            <option value="300" selected>Medium (300x300)</option>
+                            <option value="400">Large (400x400)</option>
+                            <option value="500">Extra Large (500x500)</option>
+                        </select>
+                    </div>
+
+                    <div class="option-group">
+                        <label for="colorSelect" class="option-label">Color Theme</label>
+                        <select id="colorSelect" class="option-select">
+                            <option value="#000000" selected>Classic Black</option>
+                            <option value="#7C3AED">Purple</option>
+                            <option value="#8B5CF6">Light Purple</option>
+                            <option value="#6D28D9">Deep Purple</option>
+                            <option value="#4C1D95">Dark Purple</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="generateBtn" class="generate-btn">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 4v16m8-8H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    Generate QR Code
+                </button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="output-section">
+                <div id="qrPlaceholder" class="qr-placeholder">
+                    <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+                        <rect x="14" y="14" width="3" height="3" fill="currentColor" />
+                        <rect x="18" y="14" width="3" height="3" fill="currentColor" />
+                        <rect x="14" y="18" width="3" height="3" fill="currentColor" />
+                        <rect x="18" y="18" width="3" height="3" fill="currentColor" />
+                    </svg>
+                    <p>Your QR code will appear here</p>
+                </div>
+
+                <div id="qrResult" class="qr-result hidden">
+                    <div id="qrCodeContainer" class="qr-container"></div>
+                    <div class="qr-actions">
+                        <button id="downloadBtn" class="action-btn download-btn">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 5v14m0 0l-7-7m7 7l7-7" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Download PNG
+                        </button>
+                        <button id="copyBtn" class="action-btn copy-btn">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor"
+                                    stroke-width="2" />
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor"
+                                    stroke-width="2" />
+                            </svg>
+                            Copy Image
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Made with <span class="heart">♥</span> using modern web technologies</p>
+        </footer>
+    </div>
+
+    <div id="toast" class="toast hidden">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+        </svg>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
