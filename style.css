@@ -481,6 +481,36 @@ body {
     }
 }
 
+.brand {
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease infinite;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: inline-block;
+}
+
+.brand:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+}
+
+@keyframes gradientShift {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
 /* ==================== Toast Notification ==================== */
 .toast {
     position: fixed;
