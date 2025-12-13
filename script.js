@@ -70,10 +70,20 @@ function generateQRCode() {
 
         showToast('QR Code generated successfully!');
 
-        // Add animation to the QR container
+        // Add dramatic 3D animation to the QR container
         qrCodeContainer.style.animation = 'none';
+        qrCodeContainer.style.transform = 'scale(0) rotateY(180deg)';
+        qrCodeContainer.style.opacity = '0';
+
         setTimeout(() => {
-            qrCodeContainer.style.animation = 'fadeInScale 0.5s ease';
+            qrCodeContainer.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            qrCodeContainer.style.transform = 'scale(1) rotateY(0deg)';
+            qrCodeContainer.style.opacity = '1';
+
+            // Reset animation after entrance
+            setTimeout(() => {
+                qrCodeContainer.style.animation = 'qrFloat 6s infinite ease-in-out';
+            }, 800);
         }, 10);
 
     } catch (error) {
@@ -108,23 +118,46 @@ function downloadQRCode() {
             return;
         }
 
-        // Create download link
-        const link = document.createElement('a');
-        link.download = `qrcode_${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
+        // Create a simple filename
+        const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        const filename = `QRCode_${timestamp}.png`;
 
-        // Trigger download
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Convert canvas to blob for proper download
+        canvas.toBlob(function (blob) {
+            if (!blob) {
+                showToast('Error: Could not create image');
+                return;
+            }
 
-        showToast('QR Code downloaded successfully!');
+            // Create object URL from blob
+            const url = URL.createObjectURL(blob);
+
+            // Create download link
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.style.display = 'none';
+
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+
+            // Cleanup
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+
+            showToast('QR Code downloaded successfully!');
+
+        }, 'image/png', 1.0);
 
     } catch (error) {
         console.error('Error downloading QR code:', error);
         showToast('Error downloading QR code');
     }
 }
+
 
 /**
  * Copy QR Code to clipboard
@@ -306,3 +339,116 @@ if (window.innerHeight < document.documentElement.scrollHeight) {
         });
     });
 }
+
+// ==================== 3D Card Tilt Effect ====================
+const card = document.querySelector('.card');
+let cardBounds = null;
+
+// Update card bounds on window resize
+function updateCardBounds() {
+    if (card) {
+        cardBounds = card.getBoundingClientRect();
+    }
+}
+
+updateCardBounds();
+window.addEventListener('resize', updateCardBounds);
+
+// 3D Tilt effect on mouse move
+document.addEventListener('mousemove', (e) => {
+    if (!card || !cardBounds) return;
+
+    // Check if mouse is over the card
+    const isOverCard = (
+        e.clientX >= cardBounds.left &&
+        e.clientX <= cardBounds.right &&
+        e.clientY >= cardBounds.top &&
+        e.clientY <= cardBounds.bottom
+    );
+
+    if (isOverCard) {
+        // Calculate position relative to card center
+        const cardCenterX = cardBounds.left + cardBounds.width / 2;
+        const cardCenterY = cardBounds.top + cardBounds.height / 2;
+
+        // Calculate rotation angles (limited to ±15 degrees)
+        const rotateY = ((e.clientX - cardCenterX) / cardBounds.width) * 15;
+        const rotateX = -((e.clientY - cardCenterY) / cardBounds.height) * 15;
+
+        // Apply 3D transform
+        card.classList.add('tilt-active');
+        card.style.transform = `
+            perspective(1000px) 
+            rotateX(${rotateX}deg) 
+            rotateY(${rotateY}deg) 
+            scale3d(1.02, 1.02, 1.02)
+        `;
+
+        // Add extra glow on tilt
+        card.style.boxShadow = `
+            0 ${20 + Math.abs(rotateX)}px ${40 + Math.abs(rotateY)}px rgba(139, 92, 246, ${0.3 + Math.abs(rotateX) / 50}),
+            0 0 ${50 + Math.abs(rotateY)}px rgba(139, 92, 246, 0.2)
+        `;
+    } else {
+        // Reset tilt when mouse leaves
+        card.classList.remove('tilt-active');
+        card.style.transform = '';
+        card.style.boxShadow = '';
+    }
+});
+
+// Reset tilt on mouse leave
+document.addEventListener('mouseleave', () => {
+    if (card) {
+        card.classList.remove('tilt-active');
+        card.style.transform = '';
+        card.style.boxShadow = '';
+    }
+});
+
+// Note: 3D animation for QR container is handled by CSS @keyframes qrFloat
+
+// ==================== Interactive Particles on Click ====================
+document.addEventListener('click', (e) => {
+    // Create burst of particles at click position
+    for (let i = 0; i < 5; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'click-particle';
+        particle.style.left = e.clientX + 'px';
+        particle.style.top = e.clientY + 'px';
+        particle.style.setProperty('--random-x', (Math.random() - 0.5) * 200 + 'px');
+        particle.style.setProperty('--random-y', (Math.random() - 0.5) * 200 + 'px');
+        document.body.appendChild(particle);
+
+        // Remove after animation
+        setTimeout(() => particle.remove(), 1000);
+    }
+});
+
+// Add click particle styles dynamically
+const clickParticleStyle = document.createElement('style');
+clickParticleStyle.textContent = `
+    .click-particle {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        background: var(--primary-purple);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        animation: burstParticle 1s ease-out forwards;
+        box-shadow: 0 0 20px var(--primary-purple);
+    }
+
+    @keyframes burstParticle {
+        0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(var(--random-x), var(--random-y)) scale(0);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(clickParticleStyle);
