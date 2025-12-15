@@ -32,7 +32,12 @@ def load_user(user_id):
 # ==================== Static File Routes ====================
 
 @app.route('/')
+@login_required
 def index():
+    return app.send_static_file('index.html')
+
+@app.route('/login')
+def login_page():
     return app.send_static_file('index.html')
 
 @app.route('/<path:path>')
