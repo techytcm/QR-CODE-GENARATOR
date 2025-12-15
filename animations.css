@@ -1,0 +1,48 @@
+/* ==================== Hidden Utility ==================== */
+.hidden {
+    display: none !important;
+}
+
+/* ==================== Loading Spinner Animation ==================== */
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==================== QR Code Float Animation ==================== */
+@keyframes qrFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) rotateX(0deg) rotateY(0deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+    }
+}
+
+/* ==================== Disabled Button State ==================== */
+.generate-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.generate-btn:disabled:hover {
+    transform: none !important;
+    box-shadow: var(--shadow-md);
+}
+
+.generate-btn:disabled::before {
+    display: none;
+}

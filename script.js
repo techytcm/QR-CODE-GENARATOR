@@ -29,12 +29,32 @@ urlInput.addEventListener('keypress', (e) => {
     }
 });
 
+// ==================== Configuration ====================
+const API_BASE_URL = window.location.origin + '/api';
+let useBackend = true; // Try backend first, fallback to client-side
+
 // ==================== Functions ====================
 
 /**
- * Generate QR Code from input
+ * Check if backend is available
  */
-function generateQRCode() {
+async function checkBackendHealth() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/health`, {
+            method: 'GET',
+            signal: AbortSignal.timeout(3000) // 3 second timeout
+        });
+        return response.ok;
+    } catch (error) {
+        console.warn('Backend not available, using client-side generation');
+        return false;
+    }
+}
+
+/**
+ * Generate QR Code (backend-first with client-side fallback)
+ */
+async function generateQRCode() {
     const url = urlInput.value.trim();
 
     // Validation
@@ -48,11 +68,70 @@ function generateQRCode() {
     const size = parseInt(sizeSelect.value);
     const color = colorSelect.value;
 
-    // Clear previous QR code
-    qrCodeContainer.innerHTML = '';
+    // Show loading state
+    generateBtn.disabled = true;
+    generateBtn.innerHTML = `
+        <svg class="btn-icon animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-opacity="0.25"/>
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Generating...
+    `;
 
-    // Generate new QR code
     try {
+        // Try backend first if available
+        if (useBackend) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/qr/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: url,
+                        size: size,
+                        color: color,
+                        format: 'png',
+                        errorCorrectionLevel: 'H'
+                    }),
+                    signal: AbortSignal.timeout(10000) // 10 second timeout
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Display QR code from backend
+                    qrCodeContainer.innerHTML = `<img src="${data.data.imageData}" alt="QR Code" style="width: ${size}px; height: ${size}px; image-rendering: pixelated;">`;
+
+                    // Store QR code ID for analytics
+                    currentQRCode = { id: data.data.id, imageData: data.data.imageData };
+                    currentUrl = url;
+
+                    // Show result
+                    qrPlaceholder.classList.add('hidden');
+                    qrResult.classList.remove('hidden');
+
+                    showToast('✨ QR Code generated via backend!');
+
+                    // Track generation event
+                    trackAnalytics(data.data.id, 'generate');
+
+                    // Animate the QR code
+                    animateQRCode();
+
+                    // Reset button
+                    resetGenerateButton();
+                    return;
+                }
+            } catch (backendError) {
+                console.warn('Backend generation failed, falling back to client-side:', backendError);
+                useBackend = false; // Disable backend for subsequent requests
+            }
+        }
+
+        // Fallback to client-side generation
+        qrCodeContainer.innerHTML = '';
+
         currentQRCode = new QRCode(qrCodeContainer, {
             text: url,
             width: size,
@@ -68,27 +147,74 @@ function generateQRCode() {
         qrPlaceholder.classList.add('hidden');
         qrResult.classList.remove('hidden');
 
-        showToast('QR Code generated successfully!');
+        showToast('✅ QR Code generated (offline mode)');
 
-        // Add dramatic 3D animation to the QR container
-        qrCodeContainer.style.animation = 'none';
-        qrCodeContainer.style.transform = 'scale(0) rotateY(180deg)';
-        qrCodeContainer.style.opacity = '0';
-
-        setTimeout(() => {
-            qrCodeContainer.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-            qrCodeContainer.style.transform = 'scale(1) rotateY(0deg)';
-            qrCodeContainer.style.opacity = '1';
-
-            // Reset animation after entrance
-            setTimeout(() => {
-                qrCodeContainer.style.animation = 'qrFloat 6s infinite ease-in-out';
-            }, 800);
-        }, 10);
+        // Animate the QR code
+        animateQRCode();
 
     } catch (error) {
         console.error('Error generating QR code:', error);
-        showToast('Error generating QR code. Please try again.');
+        showToast('❌ Error generating QR code. Please try again.');
+    }
+
+    // Reset button
+    resetGenerateButton();
+}
+
+/**
+ * Animate QR Code entrance
+ */
+function animateQRCode() {
+    qrCodeContainer.style.animation = 'none';
+    qrCodeContainer.style.transform = 'scale(0) rotateY(180deg)';
+    qrCodeContainer.style.opacity = '0';
+
+    setTimeout(() => {
+        qrCodeContainer.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        qrCodeContainer.style.transform = 'scale(1) rotateY(0deg)';
+        qrCodeContainer.style.opacity = '1';
+
+        // Reset animation after entrance
+        setTimeout(() => {
+            qrCodeContainer.style.animation = 'qrFloat 6s infinite ease-in-out';
+        }, 800);
+    }, 10);
+}
+
+/**
+ * Reset generate button to original state
+ */
+function resetGenerateButton() {
+    generateBtn.disabled = false;
+    generateBtn.innerHTML = `
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4v16m8-8H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        Generate QR Code
+    `;
+}
+
+/**
+ * Track analytics event
+ */
+async function trackAnalytics(qrCodeId, eventType) {
+    if (!qrCodeId || !useBackend) return;
+
+    try {
+        await fetch(`${API_BASE_URL}/analytics/track`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                qrCodeId: qrCodeId,
+                eventType: eventType,
+                referrer: document.referrer
+            })
+        });
+    } catch (error) {
+        console.debug('Analytics tracking failed:', error);
+        // Don't show error to user, analytics is not critical
     }
 }
 
@@ -110,8 +236,25 @@ function downloadQRCode() {
     }
 
     try {
-        // Get the canvas element
-        const canvas = qrCodeContainer.querySelector('canvas');
+        // Get the canvas or image element
+        let canvas = qrCodeContainer.querySelector('canvas');
+        const img = qrCodeContainer.querySelector('img');
+
+        // If we have an image from backend, download it directly
+        if (img && !canvas) {
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = `QRCode_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.png`;
+            link.click();
+
+            showToast('QR Code downloaded successfully!');
+
+            // Track download event
+            if (currentQRCode.id) {
+                trackAnalytics(currentQRCode.id, 'download');
+            }
+            return;
+        }
 
         if (!canvas) {
             showToast('Error: QR code canvas not found');
@@ -150,6 +293,11 @@ function downloadQRCode() {
 
             showToast('QR Code downloaded successfully!');
 
+            // Track download event
+            if (currentQRCode.id) {
+                trackAnalytics(currentQRCode.id, 'download');
+            }
+
         }, 'image/png', 1.0);
 
     } catch (error) {
@@ -169,8 +317,33 @@ async function copyQRCodeToClipboard() {
     }
 
     try {
-        // Get the canvas element
-        const canvas = qrCodeContainer.querySelector('canvas');
+        // Get the canvas or image element
+        let canvas = qrCodeContainer.querySelector('canvas');
+        const img = qrCodeContainer.querySelector('img');
+
+        // If we have an image from backend, convert to blob
+        if (img && !canvas) {
+            try {
+                const response = await fetch(img.src);
+                const blob = await response.blob();
+
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        'image/png': blob
+                    })
+                ]);
+
+                showToast('QR Code copied to clipboard!');
+
+                // Track copy event
+                if (currentQRCode.id) {
+                    trackAnalytics(currentQRCode.id, 'copy');
+                }
+                return;
+            } catch (err) {
+                console.error('Error copying from image:', err);
+            }
+        }
 
         if (!canvas) {
             showToast('Error: QR code canvas not found');
@@ -188,6 +361,11 @@ async function copyQRCodeToClipboard() {
                 ]);
 
                 showToast('QR Code copied to clipboard!');
+
+                // Track copy event
+                if (currentQRCode.id) {
+                    trackAnalytics(currentQRCode.id, 'copy');
+                }
 
             } catch (err) {
                 console.error('Error copying to clipboard:', err);
@@ -226,8 +404,12 @@ function showToast(message, duration = 3000) {
 }
 
 // ==================== Initialize ====================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('QR Code Generator initialized');
+
+    // Check if backend is available
+    useBackend = await checkBackendHealth();
+    console.log('Backend status:', useBackend ? 'Available ✅' : 'Offline (using client-side) ⚠️');
 
     // Focus on input field
     urlInput.focus();
