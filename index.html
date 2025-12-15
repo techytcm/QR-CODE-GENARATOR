@@ -52,6 +52,11 @@
     </div>
 
     <div class="container">
+        <button id="authBtn" class="auth-btn">Login / Register</button>
+        <div id="userDisplay" class="user-display hidden">
+            <span>Welcome, <span id="userName" class="user-name">User</span></span>
+            <button id="logoutBtn" class="logout-btn" style="position: static;">Logout</button>
+        </div>
         <header class="header">
             <div class="logo">
                 <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -165,6 +170,40 @@
                 stroke-linejoin="round" />
         </svg>
         <span id="toastMessage"></span>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModalOverlay" class="modal-overlay">
+        <div class="auth-modal">
+            <button id="closeModal" class="modal-close">&times;</button>
+            <h2 id="modalTitle" class="auth-title">Login</h2>
+
+            <form id="authForm" class="auth-form">
+                <div class="input-section">
+                    <label for="username" class="input-label">Username</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" class="url-input" required placeholder="Enter username"
+                            autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <label for="password" class="input-label">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" class="url-input" required placeholder="Enter password"
+                            autocomplete="current-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="generate-btn">
+                    <span id="submitBtnText">Login</span>
+                </button>
+            </form>
+
+            <div class="auth-switch">
+                <p id="switchText">Don't have an account? <span id="switchBtn">Register</span></p>
+            </div>
+        </div>
     </div>
 
     <!-- QRCode.js Library -->
