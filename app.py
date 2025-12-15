@@ -7,6 +7,7 @@ import qrcode
 import io
 import base64
 import uuid
+import logging
 
 app = Flask(__name__,
             static_folder='.',
@@ -18,9 +19,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Configure CORS to allow requests from the frontend
-CORS(app, supports_credentials=True, origins=["http://127.0.0.1:5500", "http://localhost:5500", "http://localhost:3000", "http://127.0.0.1:3000"])
+CORS(app, supports_credentials=True, origins=["http://127.0.0.1:5500", "http://localhost:5500", "http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8000", "http://127.0.0.1:8000"])
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 db.init_app(app)
+
+# Create database tables
+with app.app_context():
+    db.create_all()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -61,21 +70,27 @@ def register():
     username = data.get('username')
     password = data.get('password')
 
+    logger.info(f"Registration attempt for username: {username}")
+
     if not username or not password:
+        logger.warning("Registration failed: Username or password missing")
         return jsonify({"success": False, "message": "Username and password required"}), 400
 
     if User.query.filter_by(username=username).first():
+        logger.warning(f"Registration failed: Username {username} already exists")
         return jsonify({"success": False, "message": "Username already exists"}), 400
 
-    hashed_password = generate_password_hash(password, method='scrypt')
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
     new_user = User(username=username, password=hashed_password)
-    
+
     try:
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
+        logger.info(f"Registration successful for username: {username}")
         return jsonify({"success": True, "message": "Registration successful", "user": {"username": username}}), 201
     except Exception as e:
+        logger.error(f"Registration failed for username {username}: {str(e)}")
         return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route('/api/auth/login', methods=['POST'])
