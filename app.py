@@ -8,7 +8,10 @@ import io
 import base64
 import uuid
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_folder='.',
+            static_url_path='/',
+            template_folder='.')
 # In production, use a secure secret key
 app.config['SECRET_KEY'] = 'dev-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
@@ -25,6 +28,16 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+# ==================== Static File Routes ====================
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
+@app.route('/<path:path>')
+def static_files(path):
+    return app.send_static_file(path)
 
 # ==================== Health Check ====================
 @app.route('/api/health', methods=['GET'])
