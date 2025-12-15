@@ -1,333 +1,257 @@
 # 🎯 QR Code Generator - Production Grade
 
-A beautiful, full-stack QR code generator with a modern purple-themed UI and robust backend API.
+[![Version](https://img.shields.io/badge/version-2.0.0-purple?style=for-the-badge&logo=git)](https://github.com/techytcm)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-green?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge&logo=open-source-initiative)](LICENSE)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://github.com/techytcm/QR-CODE-GENARATOR/graphs/commit-activity)
 
-![QR Code Generator](https://img.shields.io/badge/version-2.0.0-purple)
-![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-green)
-![License](https://img.shields.io/badge/license-MIT-blue)
+A beautiful, full-stack QR code generator featuring a modern purple-themed UI, robust backend API, and 3D interactive elements. This project demonstrates a production-ready application with comprehensive features including analytics, rate limiting, and Docker support.
+
+![Project Preview](https://via.placeholder.com/800x400?text=QR+Code+Generator+Preview)
+
+---
+
+## 📋 Table of Contents
+
+- [Features](#-features)
+  - [Frontend Highlights](#frontend-highlights)
+  - [Backend Power](#backend-power)
+- [Tech Stack](#-tech-stack)
+- [Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Environment Setup](#environment-setup)
+- [Usage](#-usage)
+  - [Development](#development)
+  - [Production](#production)
+  - [Docker](#-docker-deployment)
+  - [Python Script](#-standalone-python-script)
+- [API Documentation](#-api-documentation)
+- [Project Structure](#-project-structure)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Contact](#-contact)
+
+---
 
 ## ✨ Features
 
-### Frontend
-- 🎨 **Modern UI** - Beautiful purple-themed design with glassmorphism effects
-- 🎭 **3D Animations** - Interactive tilt effects and smooth transitions
-- 📱 **Responsive** - Works perfectly on all devices
-- ⚡ **Offline Support** - Falls back to client-side generation when backend is unavailable
-- 🎨 **Customization** - Multiple sizes and color themes
-- 💾 **Download & Copy** - Save as PNG or copy to clipboard
-- ⌨️ **Keyboard Shortcuts** - Power user features (Ctrl+K, Ctrl+D, Ctrl+C)
+### Frontend Highlights
+- 🎨 **Modern UI Design**: Sleek purple-themed interface with glassmorphism and smooth transitions.
+- 🎭 **Interactive 3D Elements**: Tilt effects and floating shapes powered by CSS and JavaScript.
+- 📱 **Fully Responsive**: Optimized experience across desktop, tablet, and mobile devices.
+- ⚡ **Smart Fallback**: Automatically switches to client-side generation if the backend is unreachable.
+- 🛠️ **Customization Options**: Adjustable sizes (200px - 500px) and curated color themes.
+- 💾 **Easy Export**: Download generated QR codes as PNG or copy directly to the clipboard.
+- ⌨️ **Keyboard Shortcuts**: Productivity boosters like `Ctrl+K` (Focus), `Ctrl+D` (Download), and `Ctrl+C` (Copy).
 
-### Backend API
-- 🚀 **RESTful API** - Complete CRUD operations for QR codes
-- 📊 **Analytics** - Track generations, scans, downloads, and copies
-- 🔒 **Security** - Rate limiting, input validation, CORS, helmet
-- 💾 **Database** - MongoDB storage with TTL for auto-cleanup
-- 📈 **Statistics** - Detailed usage analytics and popular QR codes
-- 🔗 **URL Shortening** - Optional short URL generation (configurable)
-- 🎯 **Privacy** - IP hashing for anonymous tracking
+### Backend Power
+- 🚀 **RESTful API**: Full CRUD capabilities for QR code management.
+- 📊 **Advanced Analytics**: Track scans, downloads, and copies with device and referrer data.
+- 🔒 **Enterprise Security**: Implemented rate limiting, input validation (Joi), CORS, and Helmet headers.
+- 💾 **MongoDB Storage**: Persistent storage with automatic TTL (Time-To-Live) cleanup for old records.
+- 🔗 **URL Shortening**: Built-in URL shortener service (configurable).
+- 📈 **Statistics Dashboard**: Endpoints for popular QR codes and detailed usage stats.
 
-## 🚀 Quick Start
+---
+
+## 🛠 Tech Stack
+
+**Frontend:**
+- ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=flat-square&logo=html5&logoColor=white) HTML5
+- ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=flat-square&logo=css3&logoColor=white) CSS3 (Animations, Grid/Flexbox)
+- ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=flat-square&logo=javascript&logoColor=%23F7DF1E) Vanilla JavaScript
+
+**Backend:**
+- ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=flat-square&logo=node.js&logoColor=white) Node.js
+- ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=flat-square&logo=express&logoColor=%2361DAFB) Express.js
+- ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=flat-square&logo=mongodb&logoColor=white) MongoDB with Mongoose
+
+**DevOps & Tools:**
+- ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat-square&logo=docker&logoColor=white) Docker & Docker Compose
+- ![Python](https://img.shields.io/badge/python-3670A0?style=flat-square&logo=python&logoColor=ffdd54) Python (Utility Script)
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to set up the project locally.
 
 ### Prerequisites
-- Node.js >= 18.0.0
-- MongoDB (local or Atlas)
-- npm >= 9.0.0
+
+Ensure you have the following installed:
+*   **Node.js** (v18.0.0 or higher)
+*   **npm** (v9.0.0 or higher)
+*   **MongoDB** (Local instance or Atlas URI)
+*   **Python 3.x** (Optional, for the standalone script)
 
 ### Installation
 
-1. **Clone the repository**
-```bash
-git clone <repository-url>
-cd "QR CODE GENARATOR"
-```
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/techytcm/QR-CODE-GENARATOR.git
+    cd "QR CODE GENARATOR"
+    ```
 
-2. **Install dependencies**
-```bash
-npm install
-```
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-3. **Set up environment variables**
+### Environment Setup
+
+Create a `.env` file in the root directory by copying the example:
+
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and configure your settings:
-```env
-PORT=3000
-NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/qr-generator
-ENABLE_ANALYTICS=true
-```
+**Configuration Options:**
 
-4. **Start the server**
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | API Server port | `3000` |
+| `NODE_ENV` | Ecosystem mode | `development` |
+| `MONGODB_URI` | Database connection string | `mongodb://localhost:27017/qr-generator` |
+| `RATE_LIMIT_Window_MS` | Rate limit duration | `900000` (15m) |
+| `ENABLE_ANALYTICS` | Toggle analytics tracking | `true` |
+
+---
+
+## 💻 Usage
+
+### Development
+Start the server with hot-reloading enabled:
 ```bash
-# Development mode (with auto-reload)
 npm run dev
+```
+Visit `http://localhost:3000` in your browser.
 
-# Production mode
+### Production
+Build and start the optimized server:
+```bash
 npm start
 ```
 
-5. **Open your browser**
+### 🐳 Docker Deployment
+
+Run the entire stack (App + MongoDB) using Docker Compose:
+
+```bash
+# Start services in background
+docker-compose up -d
+
+# View logs
+docker-compose logs -f app
 ```
-http://localhost:3000
-```
+
+### 🐍 Standalone Python Script
+
+A simple Python script is included for quick local generation.
+
+1.  Ensure you have the `qrcode` library:
+    ```bash
+    pip install qrcode[pil]
+    ```
+2.  Run the script:
+    ```bash
+    python qr.py
+    ```
+3.  Enter the URL when prompted. The QR code will be saved to your Downloads folder (default path configured in script).
+
+---
 
 ## 📚 API Documentation
 
-### Base URL
-```
-http://localhost:3000/api
-```
+The API runs at `http://localhost:3000/api`.
 
-### Endpoints
+### Core Endpoints
 
-#### QR Code Generation
-**POST** `/api/qr/generate`
-
+#### `POST /qr/generate`
 Generate a new QR code.
-
-**Request Body:**
 ```json
+// Request
 {
   "text": "https://example.com",
   "size": 300,
   "color": "#7C3AED",
-  "backgroundColor": "#FFFFFF",
   "format": "png",
-  "errorCorrectionLevel": "H",
-  "expirationDays": 30
+  "errorCorrectionLevel": "H"
 }
 ```
 
-**Response:**
+#### `GET /qr/history`
+Retrieve recently generated QR codes.
+- **Query Params**: `limit` (default 20), `page` (default 1)
+
+#### `GET /qr/popular`
+Get the top most scanned/downloaded QR codes.
+
+#### `POST /analytics/track`
+Track user interactions.
 ```json
+// Request
 {
-  "success": true,
-  "data": {
-    "id": "...",
-    "imageData": "data:image/png;base64,...",
-    "shortUrl": "http://localhost:3000/s/abc123",
-    "size": 300,
-    "color": "#7C3AED",
-    "format": "png",
-    "createdAt": "2025-12-14T...",
-    "expiresAt": "2026-01-13T..."
-  }
+  "qrCodeId": "unique_id_here",
+  "eventType": "scan" // scan, download, copy
 }
 ```
-
-#### Get QR Code
-**GET** `/api/qr/:id`
-
-Retrieve a specific QR code by ID.
-
-#### Get History
-**GET** `/api/qr/history?limit=20&page=1`
-
-Get recent QR codes (paginated).
-
-#### Get Popular QR Codes
-**GET** `/api/qr/popular?limit=10`
-
-Get the most scanned QR codes.
-
-#### Get QR Stats
-**GET** `/api/qr/:id/stats`
-
-Get statistics for a specific QR code.
-
-#### Delete QR Code
-**DELETE** `/api/qr/:id`
-
-Delete a QR code and its analytics.
-
-#### Track Analytics
-**POST** `/api/analytics/track`
-
-Track an event (scan, download, copy).
-
-**Request Body:**
-```json
-{
-  "qrCodeId": "...",
-  "eventType": "scan",
-  "referrer": "https://example.com"
-}
-```
-
-#### Get Overall Statistics
-**GET** `/api/analytics/stats?days=30`
-
-Get overall analytics for the specified period.
-
-## 🛠️ Configuration
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | Server port | `3000` |
-| `NODE_ENV` | Environment (development/production) | `development` |
-| `MONGODB_URI` | MongoDB connection string | Required |
-| `RATE_LIMIT_WINDOW_MS` | Rate limit window (ms) | `900000` (15min) |
-| `RATE_LIMIT_MAX_REQUESTS` | Max requests per window | `100` |
-| `QR_GENERATION_LIMIT` | Max QR generations per hour | `50` |
-| `CORS_ORIGIN` | Allowed CORS origins | `*` |
-| `ENABLE_ANALYTICS` | Enable analytics tracking | `true` |
-| `ENABLE_URL_SHORTENING` | Enable URL shortening | `false` |
-| `SHORT_URL_DOMAIN` | Short URL domain | `http://localhost:3000/s/` |
-| `QR_EXPIRATION_DAYS` | Auto-delete QR codes after X days | `null` (disabled) |
-
-### Rate Limiting
-
-- **General API**: 100 requests per 15 minutes
-- **QR Generation**: 50 requests per hour
-- **Analytics**: 200 requests per 15 minutes
-
-## 🐳 Docker Deployment
-
-### Using Docker Compose
-
-```bash
-# Build and start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-### Manual Docker Build
-
-```bash
-# Build image
-docker build -t qr-generator .
-
-# Run container
-docker run -p 3000:3000 --env-file .env qr-generator
-```
-
-## 📁 Project Structure
-
-```
-QR CODE GENARATOR/
-├── controllers/          # Request handlers
-│   ├── qr.controller.js
-│   └── analytics.controller.js
-├── models/              # Database schemas
-│   ├── QRCode.model.js
-│   └── Analytics.model.js
-├── routes/              # API routes
-│   ├── qr.routes.js
-│   └── analytics.routes.js
-├── middleware/          # Express middleware
-│   ├── rateLimiter.js
-│   ├── validator.js
-│   └── errorHandler.js
-├── utils/               # Utility functions
-│   ├── database.js
-│   └── qrGenerator.js
-├── index.html           # Frontend HTML
-├── style.css            # Frontend styles
-├── script.js            # Frontend JavaScript
-├── server.js            # Express server
-├── package.json         # Dependencies
-└── .env                 # Environment config
-```
-
-## 🧪 Testing
-
-```bash
-# Run tests
-npm test
-
-# Run integration tests
-npm run test:integration
-
-# Watch mode
-npm run test:watch
-```
-
-## 🎨 Customization
-
-### Frontend Themes
-
-Edit `style.css` to customize colors:
-
-```css
-:root {
-    --primary-purple: #8B5CF6;
-    --secondary-purple: #7C3AED;
-    /* ... */
-}
-```
-
-### Backend Options
-
-Modify `server.js` or create custom middleware in `/middleware`.
-
-## 📊 Database Schema
-
-### QRCode Collection
-- `text`: Original URL/text
-- `size`: QR code dimensions
-- `color`: Foreground color
-- `imageData`: Base64 encoded image
-- `scanCount`: Number of scans
-- `shortId`: Shortened URL identifier
-- `expiresAt`: Auto-delete timestamp
-- `createdAt`, `updatedAt`: Timestamps
-
-### Analytics Collection
-- `qrCodeId`: Reference to QR code
-- `eventType`: Type of event (scan/download/copy)
-- `userAgent`: Browser/device info
-- `device`: Parsed device information
-- `createdAt`: Event timestamp
-
-## 🔧 Troubleshooting
-
-### Backend not connecting
-1. Check MongoDB is running: `mongod --version`
-2. Verify `.env` has correct `MONGODB_URI`
-3. Check firewall settings
-
-### Frontend shows offline mode
-1. Ensure server is running on correct port
-2. Check console for backend health errors
-3. Verify CORS settings in `.env`
-
-### Rate limiting issues
-1. Adjust limits in `.env`
-2. Clear rate limit cache (restart server)
-3. Use different IP for testing
-
-## 📝 License
-
-MIT License - feel free to use this project for personal or commercial purposes.
-
-## 👨‍💻 Author
-
-**techytcm**
-
-Made with ♥ using modern web technologies
 
 ---
 
-## 🚀 Future Enhancements
+## 📁 Project Structure
 
-- [ ] User authentication and accounts
-- [ ] QR code templates and logos
-- [ ] Batch QR code generation
-- [ ] API key authentication
-- [ ] Export analytics as CSV/PDF
-- [ ] Custom domains for short URLs
-- [ ] QR code design customization (patterns, shapes)
-- [ ] WebSocket for real-time scan tracking
+```bash
+QR CODE GENARATOR/
+├── controllers/       # Logic for requests (QR, Analytics)
+├── middleware/        # Rate limiters, validators, error handling
+├── models/            # Mongoose schemas (QRCode, Analytics)
+├── routes/            # API route definitions
+├── utils/             # Helpers (DB connection, QR generation)
+├── index.html         # Main frontend entry point
+├── script.js          # Frontend logic & interactivity
+├── style.css          # Global styles & themes
+├── animations.css     # 3D animations & keyframes
+├── server.js          # App entry point
+└── qr.py              # Auxiliary Python script
+```
 
-## 📞 Support
+---
 
-For issues, questions, or suggestions, please open an issue on GitHub.
+## 🗺 Roadmap
+
+- [ ] User Authentication system
+- [ ] Custom Logo embedding in QR codes
+- [ ] Batch generation tool
+- [ ] Export Analytics reports (CSV/PDF)
+- [ ] WebSocket integration for real-time scan notifications
+
+---
+
+## 🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+---
+
+## 📝 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+## 👤 Contact
+
+**techytcm**
+
+Project Link: [https://github.com/techytcm/QR-CODE-GENARATOR](https://github.com/techytcm/QR-CODE-GENARATOR)
+
+---
+<p align="center">Made with ♥ using modern web technologies</p>
