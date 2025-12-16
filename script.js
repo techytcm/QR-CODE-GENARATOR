@@ -31,7 +31,6 @@ urlInput.addEventListener('keypress', (e) => {
 
 // ==================== Configuration ====================
 const API_BASE_URL = 'http://localhost:5000/api';
-let isAuthenticated = false;
 let useBackend = true; // Try backend first, fallback to client-side
 
 // ==================== Functions ====================
@@ -408,27 +407,25 @@ function showToast(message, duration = 3000) {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('QR Code Generator initialized');
 
-    // Check backend health and auth status
+    // Check backend health
     useBackend = await checkBackendHealth();
     console.log('Backend status:', useBackend ? 'Available ✅' : 'Offline (using client-side) ⚠️');
-
-    if (useBackend) {
-        checkAuthStatus();
-    }
 
     // Focus on input field
     urlInput.focus();
 
     // Add subtle animation on page load
     const card = document.querySelector('.card');
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
+    if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
 
-    setTimeout(() => {
-        card.style.transition = 'all 0.8s ease';
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
-    }, 100);
+        setTimeout(() => {
+            card.style.transition = 'all 0.8s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100);
+    }
 });
 
 // ==================== Additional Features ====================
@@ -639,151 +636,5 @@ clickParticleStyle.textContent = `
     }
 `;
 document.head.appendChild(clickParticleStyle);
-// ==================== Authentication Logic ====================
 
-const authBtn = document.getElementById('authBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const userDisplay = document.getElementById('userDisplay');
-const userNameSpan = document.getElementById('userName');
-const authModalOverlay = document.getElementById('authModalOverlay');
-const closeModalBtn = document.getElementById('closeModal');
-const authForm = document.getElementById('authForm');
-const modalTitle = document.getElementById('modalTitle');
-const submitBtnText = document.getElementById('submitBtnText');
-const switchBtn = document.getElementById('switchBtn');
-const switchText = document.getElementById('switchText');
 
-let isLoginMode = true;
-
-// Event Listeners
-authBtn.addEventListener('click', openAuthModal);
-closeModalBtn.addEventListener('click', closeAuthModal);
-authModalOverlay.addEventListener('click', (e) => {
-    if (e.target === authModalOverlay) closeAuthModal();
-});
-switchBtn.addEventListener('click', toggleAuthMode);
-authForm.addEventListener('submit', handleAuthSubmit);
-logoutBtn.addEventListener('click', handleLogout);
-
-function openAuthModal() {
-    authModalOverlay.classList.add('active');
-    document.getElementById('username').focus();
-}
-
-function closeAuthModal() {
-    authModalOverlay.classList.remove('active');
-    authForm.reset();
-    isLoginMode = true;
-    updateAuthUI();
-}
-
-function toggleAuthMode() {
-    isLoginMode = !isLoginMode;
-    updateAuthUI();
-}
-
-function updateAuthUI() {
-    if (isLoginMode) {
-        modalTitle.textContent = 'Login';
-        submitBtnText.textContent = 'Login';
-        switchText.innerHTML = 'Don\'t have an account? <span id="switchBtn" onclick="toggleAuthMode()">Register</span>';
-    } else {
-        modalTitle.textContent = 'Register';
-        submitBtnText.textContent = 'Register';
-        switchText.innerHTML = 'Already have an account? <span id="switchBtn" onclick="toggleAuthMode()">Login</span>';
-    }
-    // Re-attach listener since we replaced HTML
-    document.getElementById('switchBtn').addEventListener('click', toggleAuthMode);
-}
-
-async function handleAuthSubmit(e) {
-    e.preventDefault();
-
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const endpoint = isLoginMode ? '/auth/login' : '/auth/register';
-
-    try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password }),
-            credentials: 'include'
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            showToast(data.message);
-            closeAuthModal();
-            isAuthenticated = true;
-            updateUserDisplay(data.user.username);
-        } else {
-            showToast('❌ ' + data.message);
-        }
-    } catch (error) {
-        console.error('Auth error:', error);
-        showToast('❌ Authentication failed');
-    }
-}
-
-async function handleLogout() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/logout`, {
-            method: 'POST',
-            credentials: 'include'
-        });
-
-        const data = await response.json();
-        if (data.success) {
-            showToast('Logged out successfully');
-            isAuthenticated = false;
-            updateUserDisplay(null);
-        }
-    } catch (error) {
-        console.error('Logout error:', error);
-    }
-}
-
-async function checkAuthStatus() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/status`, {
-            credentials: 'include'
-        });
-        const data = await response.json();
-
-        if (data.isAuthenticated) {
-            isAuthenticated = true;
-            updateUserDisplay(data.user.username);
-        } else {
-            isAuthenticated = false;
-            updateUserDisplay(null);
-        }
-    } catch (error) {
-        console.debug('Auth check failed:', error);
-    }
-}
-
-function updateUserDisplay(username) {
-    if (username) {
-        authBtn.classList.add('hidden');
-        userDisplay.classList.remove('hidden');
-        userNameSpan.textContent = username;
-    } else {
-        authBtn.classList.remove('hidden');
-        userDisplay.classList.add('hidden');
-    }
-}
-
-// Update generate call to include credentials
-const originalGenerate = generateQRCode;
-// We don't necessarily need to overwrite generateQRCode if we rely on global cookies.
-// Since 'credentials: include' is not default in fetch, we should update generateQRCode fetch call too?
-// The user didn't ask to protect it, but it's good practice.
-// However, editing the big function again might be risky/bloated.
-// Usually cookies are sent automatically if we just set credentials: include.
-// In checkBackendHealth, we might need it too.
-
-// Let's rely on the public nature of QR generation for now.
